@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-3.xsd"
+        default-menu-title="Article" require-authentication="anonymous-view">
+
+    <parameter name="wikiBlogId" required="true"/>
+    
+    <always-actions>
+        <set field="blogArticleExists" from="false"/>
+        <entity-find entity-name="moqui.resource.wiki.WikiBlogFindView" list="blogList">
+            <econdition field-name="wikiBlogId"/>
+            <econdition field-name="wikiPageCategoryId" value="Newsletter"/>
+            <econdition field-name="publishedVersionName" operator="is-not-null"/>
+        </entity-find>
+        <set field="blog" from="blogList.getFirst()"/>
+        <if condition="blog">
+            <set field="blogArticleExists" from="true"/>
+        </if>
+    </always-actions>
+
+    <!-- <transition name="signup">
+        <service-call name="coarchy.CoarchyServices.signup#Newsletter" in-map="[emailAddress:emailAddress]"/>
+        <default-response save-parameters="true"/></transition> -->
+
+    <pre-actions>
+        <set field="blog.publishDate" from="blog?.publishDate?ec.l10n.format(blog.publishDate, 'MMM dd, yyyy'):null"/>
+
+        <set field="baseLinkUrl" from="ec.web.getWebappRootUrl(true, 'production'.equals(System.getProperty('instance_purpose')))"/>
+        <set field="imageUrl" from="baseLinkUrl+'/content/downloadSmallImage?wikiBlogId='+blog.wikiBlogId"/>
+
+        <entity-find-one entity-name="moqui.resource.wiki.WikiSpace" value-field="wikiSpace">
+            <field-map field-name="wikiSpaceId" from="blog.wikiSpaceId"/></entity-find-one>
+        <set field="rootPageRef" from="ec.resource.getLocationReference(wikiSpace.rootPageLocation)"/>
+        <set field="pageReference" from="rootPageRef.findChildFile(blog.pagePath)"/>
+        <set field="pageText" from="pageReference.getText(blog.publishedVersionName)"/>
+
+        <set field="html_keywords" from="blog?.metaKeywords?:html_keywords"/>
+        <set field="html_description" from="blog?.metaDescription?:html_description"/>
+        <set field="html_title" from="blog?.title?:'Coarchy Blog'"/>
+        <set field="html_image" from="imageUrl"/>
+        <set field="html_url" from="baseLinkUrl+'/Article?wikiBlogId='+blog.wikiBlogId"/>
+        <set field="html_type" value="article"/>
+        <set field="html_site_name" value="Coarchy"/>
+
+<!--        <log level="warn" message="Article context.toString() ${context.toString()}"/>-->
+    </pre-actions>
+
+    <widgets><render-mode>
+        <text type="html"><![CDATA[
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 col-xs-12 offset-xs-0">
+                    <div class="column justify-center">
+                        <div class="col-4">
+                            <q-card flat bordered style="width: 100%;" class="col-4 q-ma-xs bg-grey-1" data-aos="fade-in" data-aos-easing="ease-in-out-cubic">
+                                <div v-if="${blogArticleExists?string('true','false')}">
+                                    <q-card-section>
+                                        <h1 class="text-h2">${blog.title!}</h1>
+                                    </q-card-section>
+
+                                    <q-card-section>
+                                        <div class="text-h6">${blog.summary!}</div>
+                                    </q-card-section>
+
+                                    <q-card-section>
+                                        <div class="q-pa-md row justify-center">
+                                            <q-img src="${imageUrl!}" :ratio="16/9"/>
+                                        </div>
+                                        <div class="text-subtitle2">By ${blog.author!}</div>
+                                        <div class="text-subtitle2">Published ${blog.publishDate!}</div>
+                                    </q-card-section>
+
+                                    <q-card-section>
+                                        <div class="text-body1">${pageText!}</div>
+                                    </q-card-section>
+                                </div>
+                                <div v-else>
+                                    <q-card-section>
+                                        <div class="text-h2">No Article Found</div>
+                                    </q-card-section>
+                                </div>
+
+                                <q-separator class="q-mt-md" inset></q-separator>
+
+                                <div class="flex flex-center justify-center items-center text-h4 q-mt-md">Sign up for our Newsletter</div>
+                                <div class="flex flex-center justify-center items-center text-h6 q-mt-xs">Learn about requirements and get product updates</div>
+                                <div class="flex flex-center justify-center items-center q-mt-lg q-mb-md"><c-newsletter-signup></c-newsletter-signup></div>
+                            </q-card>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            ]]></text></render-mode></widgets>
+</screen>
