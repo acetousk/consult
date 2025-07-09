@@ -18,8 +18,20 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.security.ArtifactGroup artifactGroupId="consult_APP" description="consult App (via root screen)"/>
     <moqui.security.ArtifactGroupMember artifactGroupId="consult_APP" artifactTypeEnumId="AT_XML_SCREEN"
             inheritAuthz="Y" artifactName="component://consult/screen/App.xml"/>
+    
+    <!-- User group for consult clients -->
+    <moqui.security.UserGroup userGroupId="CONSULT_CLIENT" description="Consult Client Users"/>
+    
     <!-- Full permissions for the ADMIN user group -->
     <moqui.security.ArtifactAuthz artifactAuthzId="consult_AUTHZ_ALL" userGroupId="ADMIN" artifactGroupId="consult_APP"
             authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL"/>
+    <!-- Access permissions for CONSULT_CLIENT user group -->
+    <moqui.security.ArtifactAuthz artifactAuthzId="consult_AUTHZ_CLIENT" userGroupId="CONSULT_CLIENT" artifactGroupId="consult_APP"
+            authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL"/>
+
+    <moqui.screen.ScreenThemeResource screenThemeId="DEFAULT_QUASAR" sequenceNum="100" resourceTypeEnumId="STRT_HEADER_LOGO"
+            resourceValue="/moquisupport150.png"/>
+    <moqui.screen.ScreenThemeResource screenThemeId="DEFAULT" sequenceNum="100" resourceTypeEnumId="STRT_HEADER_LOGO"
+            resourceValue="/moquisupport150.png"/>
 
 </entity-facade-xml>

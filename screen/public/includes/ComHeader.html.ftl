@@ -14,7 +14,7 @@
     <#if html_url?has_content><meta property="og:url" content="${html_url}"></#if>
     <#if html_type?has_content><meta property="og:type" content="${html_type}"></#if>
     <#if html_site_name?has_content><meta property="og:site_name" content="${html_site_name}"></#if>
-    <link rel="apple-touch-icon" href="/coarchy120.png"/>
+    <link rel="apple-touch-icon" href="/moquisupport150.png"/>
     <#-- Style Sheets -->
 <#--    <#list sri.getThemeValues("STRT_STYLESHEET") as styleSheetLocation>-->
 <#--        <#assign hrefUrl = sri.buildUrl(styleSheetLocation).url>-->
@@ -34,8 +34,7 @@
         <#assign srcUrl = sri.buildUrl(scriptLocation).url>
         <script src="${srcUrl}<#if !scriptLocation?starts_with("http") && !srcUrl?contains("?")>?v=${ec.web.getResourceDistinctValue()}</#if>" type="text/javascript"></script>
     </#list>
-    <script defer data-domain="coarchy.com" src="https://plausible.io/js/script.js"></script>
-    <script defer src="https://umami.coarchy.com/script.js" data-website-id="3870ea78-ffac-4a20-a878-f0c08815368f"></script>
+    <#--  <script defer src="https://umami.coarchy.com/script.js" data-website-id="3870ea78-ffac-4a20-a878-f0c08815368f"></script>  -->
     <#-- Icon -->
     <#list sri.getThemeValues("STRT_SHORTCUT_ICON") as iconLocation>
         <link rel="shortcut icon" href="${sri.buildUrl(iconLocation).url}">
@@ -66,9 +65,9 @@
 
     <#-- for layout options see: https://quasar.dev/layout/layout -->
     <#-- to build a layout use the handy Quasar tool: https://quasar.dev/layout-builder -->
-    <q-layout view="hHh Lpr lff">
-        <q-header class="${headerClass}" id="top"><q-toolbar style="font-size:15px; background: #eeeeee;">
-                <q-btn v-show="$q.screen.lt.sm" flat icon="menu" @click="toggleDrawerOpen()" size="md"></q-btn>
+    <q-layout view="hHh Lpr lff" style="background: #fcfaf1;">
+        <q-header class="${headerClass}" id="top"><q-toolbar style="font-size:15px; background: #fcfaf1;">
+                <#--  <q-btn v-show="$q.screen.lt.sm" flat icon="menu" @click="toggleDrawerOpen()" size="md"></q-btn>  -->
 
                 <q-btn stretch flat href="/">
                     <a href="/"></a>
@@ -80,7 +79,7 @@
 
                 <q-space></q-space>
                 
-                <template v-if="!$q.screen.lt.sm">
+                <#--  <template v-if="!$q.screen.lt.sm">
                     <q-btn stretch flat label="Templates" href="/Templates"><a href="/Templates"></a></q-btn>
                     <q-separator dark vertical></q-separator>
                     <q-btn stretch flat label="Services" href="/Services"><a href="/Services"></a></q-btn>
@@ -97,14 +96,14 @@
                         <q-btn stretch flat label="Sign Up" href="/SignUp"><a href="/SignUp"></a></q-btn>
                         <q-separator dark vertical></q-separator>
                     </#if>
-                </template>
+                </template>  -->
                 <q-space></q-space>
 
                 <#--  Only render template right drawer button if we're on the template screen  -->
-                <#assign screenUrl = sri.getCurrentScreenUrl() />
+                <#--  <#assign screenUrl = sri.getCurrentScreenUrl() />
                 <#if screenUrl?ends_with("/Template")>
                     <q-btn v-if="$q.screen.lt.sm" flat icon="assignment" @click="toggleDrawerRightOpen()" size="md"></q-btn>
-                </#if>
+                </#if>  -->
 
                 <#--                <#assign headerTitleList = sri.getThemeValues("STRT_HEADER_TITLE")>-->
 <#--                <#if headerTitleList?has_content>-->

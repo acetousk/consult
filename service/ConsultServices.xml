@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a 
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-3.xsd">
+
+    <!-- consult & Related Services -->
+    <service verb="signUp" noun="User" authenticate="anonymous-all">
+        <description>Sign up a new user account</description>
+        <in-parameters>
+            <parameter name="emailAddress" required="true"/>
+            <parameter name="companyName" required="true"/>
+            <parameter name="firstName" required="true"/>
+            <parameter name="lastName" required="true"/>
+            <parameter name="newPassword" required="true"/>
+            <parameter name="newPasswordVerify" required="true"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="userId"/>
+            <parameter name="partyId"/>
+        </out-parameters>
+        <actions>
+            <!-- Validate password match -->
+            <if condition="newPassword != newPasswordVerify">
+                <return error="true" message="Passwords do not match"/>
+            </if>
+            
+            <!-- Create person customer with user account -->
+            <service-call name="mantle.party.PartyServices.create#PersonCustomer" 
+                in-map="[firstName:firstName, lastName:lastName, emailAddress:emailAddress, disabled:'Y',
+                         newPassword:newPassword, newPasswordVerify:newPasswordVerify, createUserAccount:true, userGroupId:'CONSULT_CLIENT']" 
+                out-map="personResult"/>
+            <set field="userId" from="personResult.userId"/>
+            <set field="partyId" from="personResult.partyId"/>
+
+            <service-call name="create#moqui.security.UserPreference" in-map="[userId:userId, preferenceKey:'QUASAR_LEFT_OPEN', preferenceValue:'true']"/>
+
+            <!-- Create or find company -->
+            <entity-find entity-name="mantle.party.Organization" list="existingCompanies">
+                <econdition field-name="organizationName" from="companyName" ignore-case="true"/>
+            </entity-find>
+            <if condition="existingCompanies">
+                <return error="true" message="Company ${companyName} already exists. Email support at help@moquisupport.com to be added to this company."/>
+            <else>
+                <service-call name="mantle.party.PartyServices.create#Organization" in-map="[organizationName:companyName,ownerPartyId:partyId]" out-map="companyResult"/>
+                <set field="companyPartyId" from="companyResult.partyId"/>
+            </else>
+            </if>
+
+            <!-- Create relationship between person and company -->
+            <service-call name="create#mantle.party.PartyRelationship" 
+                in-map="[fromPartyId:partyId, toPartyId:companyPartyId, relationshipTypeEnumId:'PrtMember', fromDate:ec.user.nowTimestamp]"/>
+
+            <return type="success" message="Please check your email for a link to activate your account."/>
+        </actions>
+    </service>
+</services>
