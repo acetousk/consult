@@ -28,6 +28,7 @@ along with this software (see the LICENSE.md file). If not, see
         <out-parameters>
             <parameter name="userId"/>
             <parameter name="partyId"/>
+            <parameter name="activationCode"/>
         </out-parameters>
         <actions>
             <!-- Validate password match -->
@@ -42,6 +43,8 @@ along with this software (see the LICENSE.md file). If not, see
                 out-map="personResult"/>
             <set field="userId" from="personResult.userId"/>
             <set field="partyId" from="personResult.partyId"/>
+
+            <entity-find-one entity-name="moqui.security.UserAccount" value-field="userAccount" auto-field-map="[userId:userId]"/>
 
             <service-call name="create#moqui.security.UserPreference" in-map="[userId:userId, preferenceKey:'QUASAR_LEFT_OPEN', preferenceValue:'true']"/>
 
@@ -60,8 +63,55 @@ along with this software (see the LICENSE.md file). If not, see
             <!-- Create relationship between person and company -->
             <service-call name="create#mantle.party.PartyRelationship" 
                 in-map="[fromPartyId:partyId, toPartyId:companyPartyId, relationshipTypeEnumId:'PrtMember', fromDate:ec.user.nowTimestamp]"/>
+            
+            <set field="activationCode" from="getRandomString(12)"/>
+            <service-call name="create#moqui.security.UserAuthcFactor" in-map="[userId:userId, factorTypeEnumId:'UafEmailVerify', fromDate:ec.user.nowTimestamp,
+                factorOption:activationCode]"/>
+            
+            <service-call name="org.moqui.impl.EmailServices.send#EmailTemplate" in-map="[emailTemplateId:'CONSULT_SIGNUP', toAddresses:emailAddress,
+                bodyParameters:[activationCode:activationCode,username:emailAddress]]"/>
 
             <return type="success" message="Please check your email for a link to activate your account."/>
+        </actions>
+    </service>
+
+    <service verb="activate" noun="User" authenticate="anonymous-all">
+        <description>Activate a user account</description>
+        <in-parameters>
+            <parameter name="username" required="true"/>
+            <parameter name="code" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-find entity-name="moqui.security.UserAccount" list="existingUsers" limit="1" for-update="true">
+                <econdition field-name="username" from="username"/>
+            </entity-find>
+            <if condition="!existingUsers">
+                <return error="true" message="User ${username} not found."/>
+            </if>
+            <set field="userAccount" from="existingUsers[0]"/>
+
+            <entity-find entity-name="moqui.security.UserAuthcFactor" list="existingAuthcFactors" limit="1">
+                <econdition field-name="userId" from="userAccount.userId"/>
+                <econdition field-name="factorTypeEnumId" from="'UafEmailVerify'"/>
+                <econdition field-name="factorOption" from="code"/>
+            </entity-find>
+
+            <if condition="!existingAuthcFactors">
+                <return type="danger" message="Activation code not found or expired."/>
+            </if>
+            <set field="authcFactor" from="existingAuthcFactors[0]"/>
+            <if condition="authcFactor.thruDate?.before(ec.user.nowTimestamp)">
+                <return type="info" message="Already activated. Please login."/>
+            </if>
+            <set field="authcFactor.thruDate" from="ec.user.nowTimestamp"/>
+            <entity-update value-field="authcFactor"/>
+
+            <if condition="userAccount.disabled != 'Y'">
+                <return type="info" message="User is already activated. Please login."/>
+            </if>
+            <set field="userAccount.disabled" value="N"/>
+            <entity-update value-field="userAccount"/>
+            <return type="success" message="User ${username} activated. Please login."/>
         </actions>
     </service>
 </services>

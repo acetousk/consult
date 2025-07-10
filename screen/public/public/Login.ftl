@@ -48,6 +48,14 @@
                     <#if username?has_content && secondFactorRequired>disabled="disabled"</#if>
                     required="required" class="form-control top"
                     placeholder="${ec.l10n.localize("Username")}" aria-label="${ec.l10n.localize("Username")}">
+            <script>
+                // Default to username parameter from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const usernameParam = urlParams.get('username');
+                if (usernameParam && !document.getElementById('login_form_username').value) {
+                    document.getElementById('login_form_username').value = usernameParam;
+                }
+            </script>
             <#-- secondFactorRequired will only be set if a user is pre-authenticated, and in that case password not required again -->
             <#if secondFactorRequired>
                 <input id="login_form_code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"

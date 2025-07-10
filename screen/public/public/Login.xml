@@ -17,6 +17,7 @@ along with this software (see the LICENSE.md file). If not, see
 
     <parameter name="initialTab"/>
     <parameter name="returnTo"/>
+    <parameter name="username"/>
 
     <!-- partial list of scenarios:
       x basic login
@@ -114,10 +115,15 @@ along with this software (see the LICENSE.md file). If not, see
         <default-response url="."/>
         <error-response url="." save-parameters="true"/>
     </transition>
+    <transition name="activateAccount" require-session-token="false" read-only="true">
+        <service-call name="ConsultServices.activate#User" in-map="context"/>
+        <default-response url="/Login?returnTo=/qapps/Dashboard&amp;username=${org.moqui.util.StringUtilities.urlEncodeIfNeeded(username)}"/>
+        <error-response url="." save-parameters="true"/>
+    </transition>
 
     <pre-actions><script>
         // if user already logged in redirect to root
-        if (ec.user.userId) sri.sendRedirectAndStopRender('/')
+        if (ec.user.userId &amp;&amp; !username) sri.sendRedirectAndStopRender('/')
 
         // jQuery/UI
         html_scripts.add('/libs/jquery/jquery.min.js')

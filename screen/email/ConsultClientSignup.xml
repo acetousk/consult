@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-3.xsd">
+
+    <actions>
+        <set field="baseLinkUrl" from="ec.web.getWebappRootUrl(true, 'production'.equals(System.getProperty('instance_purpose')))"/>
+        <set field="linkUrl" value="${baseLinkUrl}/Login/activateAccount?username=${org.moqui.util.StringUtilities.urlEncodeIfNeeded(username)}&amp;code=${org.moqui.util.StringUtilities.urlEncodeIfNeeded(activationCode)}"/>
+    </actions>
+
+    <widgets>
+        <render-mode><text type="html"><![CDATA[<html><body>]]></text></render-mode>
+        <container><label text="Thank you for signing up for the Moqui Support Dashboard!"/></container>
+        <container><label text="Please click the link below to activate your account."/></container>
+        <container>
+            <render-mode><text type="html"><![CDATA[<a href="${linkUrl}">Activate Your Account</a>]]></text></render-mode>
+        </container>
+        <container><label text=" "/></container>
+        <container><label text="If you have any questions, please contact support at help@moquisupport.com."/></container>
+        <render-mode><text type="html"><![CDATA[</body></html>]]></text></render-mode>
+    </widgets>
+</screen>

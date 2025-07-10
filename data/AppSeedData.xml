@@ -13,7 +13,6 @@ along with this software (see the LICENSE.md file). If not, see
 <http://creativecommons.org/publicdomain/zero/1.0/>.
 -->
 <entity-facade-xml type="seed">
-
     <!-- Artifact group for all of the consult application via the App screen (the root screen for the app) -->
     <moqui.security.ArtifactGroup artifactGroupId="consult_APP" description="consult App (via root screen)"/>
     <moqui.security.ArtifactGroupMember artifactGroupId="consult_APP" artifactTypeEnumId="AT_XML_SCREEN"
@@ -33,5 +32,17 @@ along with this software (see the LICENSE.md file). If not, see
             resourceValue="/moquisupport150.png"/>
     <moqui.screen.ScreenThemeResource screenThemeId="DEFAULT" sequenceNum="100" resourceTypeEnumId="STRT_HEADER_LOGO"
             resourceValue="/moquisupport150.png"/>
+
+    <moqui.basic.email.EmailTemplate emailTemplateId="PASSWORD_RESET" fromAddress="system@moquisupport.com"/>
+    <moqui.basic.email.EmailTemplate emailTemplateId="SINGLE_USE_CODE" fromAddress="system@moquisupport.com"/>
+    <moqui.basic.email.EmailTemplate emailTemplateId="ADDED_EMAIL_AUTHC_FACTOR" fromAddress="system@moquisupport.com"/>
+    <moqui.basic.email.EmailTemplate emailTemplateId="EMAIL_AUTHC_FACTOR_SENT" fromAddress="system@moquisupport.com"/>
+    <moqui.basic.email.EmailTemplate emailTemplateId="NOTIFICATION" fromAddress="system@moquisupport.com"/>
+    <moqui.basic.email.EmailTemplate emailTemplateId="SCREEN_RENDER" fromAddress="system@moquisupport.com"/>
+    <moqui.basic.email.EmailTemplate emailTemplateId="CONSULT_SIGNUP" description="Consult Client Dashboard Signup" emailServerId="SYSTEM"
+            bodyScreenLocation="component://consult/screen/email/ConsultClientSignup.xml" webappName="webroot"
+            fromAddress="system@moquisupport.com" ccAddresses="" bccAddresses="" subject="Active your Moqui Support Account" sendPartial="Y"/>    
+
+    <moqui.basic.Enumeration description="Email Verify Code" enumId="UafEmailVerify" enumTypeId="UserAuthcFactorType"/>
 
 </entity-facade-xml>
