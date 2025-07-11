@@ -3,14 +3,12 @@
 <moqui-conf xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/moqui-conf-3.xsd">
     <screen-facade>
         <screen location="component://webroot/screen/webroot/apps.xml">
-            <subscreens-item name="Dashboard" menu-title="Dashboard" menu-index="97" location="component://consult/screen/App.xml"/>
+            <subscreens-item name="Dashboard" menu-title="🖥️ Dashboard" menu-index="97" location="component://consult/screen/Dashboard/App.xml"/>
         </screen>
         <screen location="component://webroot/screen/webroot.xml">
-
             <!-- Public Website -->
             <subscreens-item name="public" menu-include="false" no-sub-path="true" location="component://consult/screen/public/public.xml"/>
             <subscreens-item name="publicstatic" menu-include="false" location="component://consult/screen/public/publicstatic.xml"/>
-            
         </screen>
     </screen-facade>
 

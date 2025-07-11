@@ -16,7 +16,7 @@ along with this software (see the LICENSE.md file). If not, see
     <!-- Artifact group for all of the consult application via the App screen (the root screen for the app) -->
     <moqui.security.ArtifactGroup artifactGroupId="consult_APP" description="consult App (via root screen)"/>
     <moqui.security.ArtifactGroupMember artifactGroupId="consult_APP" artifactTypeEnumId="AT_XML_SCREEN"
-            inheritAuthz="Y" artifactName="component://consult/screen/App.xml"/>
+            inheritAuthz="Y" artifactName="component://consult/screen/Dashboard/App.xml"/>
     
     <!-- User group for consult clients -->
     <moqui.security.UserGroup userGroupId="CONSULT_CLIENT" description="Consult Client Users"/>
